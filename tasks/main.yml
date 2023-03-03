@@ -9,12 +9,17 @@
 - name: Role foolean/nis
   block:
 
-    - name: Ensure NIS server and client are not installed (CIS)
+    - name: Set OS variables
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+      with_first_found:
+        - "{{ ansible_os_family|lower }}.yml"
+        - "default.yml"
+
+    - name: CIS | Ensure NIS server and client are not installed
       become: true
       ansible.builtin.package:
-        name:
-          - 'ypserv'
-          - 'ypbind'
+        name: "{{ nis_packages }}"
         state: absent
 
   # Tags to be applied to this role (block)
